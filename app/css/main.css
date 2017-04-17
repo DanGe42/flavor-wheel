@@ -1,0 +1,27 @@
+#tasting-wheel-container {
+  height: 503px;
+  width: 503px;
+}
+
+.circle__outer {
+  stroke: #000;
+}
+
+.circle__inner {
+  stroke: #000;
+}
+
+.ray-grid > line {
+  stroke: #000;
+}
+
+.data__poly {
+  stroke: #00F;
+  fill: rgba(0, 128, 255, 0.5);
+}
+
+.data__point {
+  stroke-width: 4;
+  stroke: #00F;
+  fill: #FFF;
+}
