@@ -5,8 +5,9 @@
   "author": "Daniel Ge",
   "license": "MIT",
   "scripts": {
-    "webpack": "webpack --config webpack.config.js",
-    "webpack-dev": "webpack-dev-server"
+    "build": "npm run webpack:build",
+    "webpack:build": "webpack --config webpack.config.js",
+    "webpack:dev": "webpack-dev-server"
   },
   "devDependencies": {
     "css-loader": "^0.28.0",
