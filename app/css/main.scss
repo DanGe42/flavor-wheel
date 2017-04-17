@@ -25,3 +25,13 @@
   stroke: #00F;
   fill: #FFF;
 }
+
+.labels {
+  font-family: sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+
+  &.hidden {
+    fill: rgba(0, 0, 0, 0);
+  }
+}
