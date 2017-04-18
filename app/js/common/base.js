@@ -9,9 +9,3 @@ export function exists(value) {
 export function withDefault(value, def) {
   return exists(value) ? value : def;
 };
-
-export function removeAllChildren(parent) {
-  while (parent.firstChild) {
-    parent.removeChild(parent.firstChild);
-  }
-};

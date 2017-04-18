@@ -1,6 +1,7 @@
-import Coordinate from './coordinate';
-import { exists, withDefault, removeAllChildren } from './util';
-import { mustExist, checkState } from './preconditions';
+import Coordinate from './svg/coordinate';
+import { exists, withDefault } from './common/base';
+import { removeAllChildren } from './common/dom';
+import { mustExist, checkState } from './common/preconditions';
 
 export default function WheelRenderer(document, container, options) {
   this.document = document;

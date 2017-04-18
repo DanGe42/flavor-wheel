@@ -1,7 +1,7 @@
-import Coordinate from './coordinate';
+import Coordinate from './svg/coordinate';
 import WheelRenderer from './wheel_renderer';
-import { withDefault } from './util';
-import { mustExist, checkState } from './preconditions';
+import { withDefault } from './common/base';
+import { mustExist, checkState } from './common/preconditions';
 
 export default function WheelMediator(constraints) {
   const { maxValue, tickCount, categories } = constraints;

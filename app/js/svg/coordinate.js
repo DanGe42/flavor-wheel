@@ -1,4 +1,4 @@
-import { exists } from './util';
+import { exists } from '../common/base';
 
 /**
  * A Coordinate represents both a Cartesian coordinate and a polar coordinate.

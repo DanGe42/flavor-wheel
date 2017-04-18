@@ -1,4 +1,4 @@
-import { exists } from './util';
+import { exists } from './base';
 
 export function mustExist(value, message) {
   if (!exists(value)) {
