@@ -48,4 +48,5 @@ window.onload = function() {
   renderer.renderData(
     Array(16).fill(null).map(() => getRandomIntInclusive(1, 5)),
     5);
+  renderer.renderLabels(categories);
 };
