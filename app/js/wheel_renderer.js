@@ -15,9 +15,13 @@ export default function WheelRenderer(document, container, options) {
   this.radius = withDefault(radius, 250);
   // Total circle radius is 250, but depending on styling, you may have to
   // adjust further.
-  this.viewBox = withDefault(viewBox, '-257 -257 514 514');
+  this.viewBox = computeViewBox(withDefault(drawingRadius, 400));
   this.rayCount = withDefault(rayCount, 16);
   this.ringCount = withDefault(ringCount, 5);
+}
+
+function computeViewBox(drawnRadius) {
+  return `-${drawnRadius} -${drawnRadius} ${2*drawnRadius} ${2*drawnRadius}`;
 }
 
 WheelRenderer.prototype.renderBase = function() {
