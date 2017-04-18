@@ -21,22 +21,22 @@ function getRandomIntInclusive(min, max) {
 
 window.onload = function() {
   const categories = [
-    'sweet',
-    'sour/tart',
-    'floral',
-    'spicy',
     'salty',
-    'berry fruit',
-    'citrus fruit',
-    'stone fruit',
-    'chocolate',
-    'caramel',
-    'smoky',
-    'bitter',
-    'savory',
-    'body',
+    'spicy',
+    'floral',
+    'sour/tart',
+    'sweet',
+    'linger/\nfinish',
     'clean',
-    'linger/finish'
+    'body',
+    'savory',
+    'bitter',
+    'smoky',
+    'caramel',
+    'chocolate',
+    'stone\nfruit',
+    'citrus\nfruit',
+    'berry\nfruit'
   ];
   const mediator = new WheelMediator({
     maxValue: 5,
