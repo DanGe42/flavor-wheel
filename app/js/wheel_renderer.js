@@ -3,6 +3,7 @@ import { exists, withDefault } from './common/base';
 import { document } from './common/browser';
 import { removeAllChildren } from './common/dom';
 import { mustExist, checkState } from './common/preconditions';
+import { createSVGElement } from './svg/dom';
 
 export default function WheelRenderer(container, options) {
   this.svgContainer = container;
@@ -26,7 +27,7 @@ function computeViewBox(drawnRadius) {
 }
 
 WheelRenderer.prototype.renderBase = function() {
-  const svg = this._newSvgElement('svg', {
+  const svg = createSVGElement('svg', {
     version: '1.1',
     baseProfile: 'full',
     viewBox: this.viewBox
@@ -42,9 +43,9 @@ WheelRenderer.prototype.renderBase = function() {
   const rayGroup = this._drawRays(this.rayCount);
   svg.appendChild(rayGroup);
 
-  const debug = this._newSvgElement('g', { class: 'debug' });
-  const labels = this._newSvgElement('g', { class: 'labels hidden' });
-  const data = this._newSvgElement('g', { class: 'data' });
+  const debug = createSVGElement('g', { class: 'debug' });
+  const labels = createSVGElement('g', { class: 'labels hidden' });
+  const data = createSVGElement('g', { class: 'data' });
   svg.appendChild(debug);
   svg.appendChild(labels);
   svg.appendChild(data);
@@ -57,7 +58,7 @@ WheelRenderer.prototype.renderBase = function() {
 };
 
 WheelRenderer.prototype._debugRect = function(coord, bbox, data) {
-  const rect = this._newSvgElement('rect', {
+  const rect = createSVGElement('rect', {
     x: coord.svgX, y: coord.svgY, width: bbox.width, height: bbox.height,
     'data-debug': data || ''
   });
@@ -142,14 +143,14 @@ WheelRenderer.prototype.renderRadii = function(radiiList) {
   });
 
   const polygonPoints = points.map(coord => `${coord.svgX},${coord.svgY}`).join(' ');
-  const polygon = this._newSvgElement('polygon', {
+  const polygon = createSVGElement('polygon', {
     class: 'data__poly',
     points: polygonPoints,
     "stroke-width": 4
   });
 
   const dots = points.map(coord => {
-    return this._newSvgElement('circle', {
+    return createSVGElement('circle', {
       class: 'data__point',
       cx: coord.svgX, cy: coord.svgY, r: 4
     })
@@ -167,9 +168,9 @@ WheelRenderer.prototype.scaleToRadius = function(value, upperBound) {
 WheelRenderer.prototype._createTextNodes = function(labels) {
   return labels.map(labelText => {
     const lines = labelText.split('\n');
-    const text = this._newSvgElement('text');
+    const text = createSVGElement('text');
     lines.forEach(line => {
-      const tspan = this._newSvgElement('tspan', {x: 0, dy: '1em'});
+      const tspan = createSVGElement('tspan', {x: 0, dy: '1em'});
       tspan.textContent = line;
       text.appendChild(tspan);
     });
@@ -180,10 +181,10 @@ WheelRenderer.prototype._createTextNodes = function(labels) {
 
 WheelRenderer.prototype._drawRings = function(ringCount) {
   // First create the ring group
-  const g = this._newSvgElement('g', { class: 'grid__circle' });
+  const g = createSVGElement('g', { class: 'grid__circle' });
 
   // Create the outer circle
-  const outerCircle = this._newSvgElement('circle', {
+  const outerCircle = createSVGElement('circle', {
     class: 'circle__outer',
     cx: 0, cy: 0, r: this.radius,
     "stroke-width": 6, fill: 'none'
@@ -193,7 +194,7 @@ WheelRenderer.prototype._drawRings = function(ringCount) {
   // Build inner circles. Subtract 1 because we've build the outer circle, and
   // start at 1 because we won't draw the origin.
   for (let i = 1; i <= ringCount - 1; i += 1) {
-    let ring = this._newSvgElement('circle', {
+    let ring = createSVGElement('circle', {
       class: 'circle__inner',
       cx: 0, cy: 0,
       r: i * (this.radius / ringCount),
@@ -206,7 +207,7 @@ WheelRenderer.prototype._drawRings = function(ringCount) {
 };
 
 WheelRenderer.prototype._drawRays = function(rayCount) {
-  const g = this._newSvgElement('g', { class: 'ray-grid' });
+  const g = createSVGElement('g', { class: 'ray-grid' });
 
   const origin = new Coordinate({x: 0, y: 0});
   // Draw each ray from the origin to the perimeter
@@ -222,22 +223,8 @@ WheelRenderer.prototype._drawRays = function(rayCount) {
 };
 
 WheelRenderer.prototype._makeLine = function(c1, c2) {
-  return this._newSvgElement('line', {
+  return createSVGElement('line', {
     x1: c1.svgX, y1: c1.svgY,
     x2: c2.svgX, y2: c2.svgY
   });
-};
-
-WheelRenderer.prototype._newSvgElement = function(tag, attrs) {
-  const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
-  for (let attr in attrs) {
-    if (attrs.hasOwnProperty(attr)) {
-      let value = attrs[attr];
-      if (typeof value !== 'string') {
-        value = String(value);
-      }
-      element.setAttribute(attr, value);
-    }
-  }
-  return element;
 };
