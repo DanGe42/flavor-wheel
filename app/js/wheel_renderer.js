@@ -37,15 +37,36 @@ WheelRenderer.prototype.renderBase = function() {
   const rayGroup = this._drawRays(this.rayCount);
   svg.appendChild(rayGroup);
 
+  const debug = this._newSvgElement('g', { class: 'debug' });
   const labels = this._newSvgElement('g', { class: 'labels hidden' });
   const data = this._newSvgElement('g', { class: 'data' });
+  svg.appendChild(debug);
   svg.appendChild(labels);
   svg.appendChild(data);
 
   this.svgContainer.appendChild(svg);
 
+  this.debugGroup = debug;
   this.labelGroup = labels;
   this.dataGroup = data;
+};
+
+WheelRenderer.prototype._debugRect = function(coord, bbox, data) {
+  const rect = this._newSvgElement('rect', {
+    x: coord.svgX, y: coord.svgY, width: bbox.width, height: bbox.height,
+    'data-debug': data || ''
+  });
+  this.debugGroup.appendChild(rect);
+};
+
+WheelRenderer.prototype._debugRay = function(coord, data) {
+  const line = this._makeLine(new Coordinate({x: 0, y: 0}), coord);
+  line.setAttribute('data-debug', data || '');
+  this.debugGroup.appendChild(line);
+};
+
+WheelRenderer.prototype._clearDebug = function() {
+  removeAllChildren(this.debugGroup);
 };
 
 WheelRenderer.prototype.renderLabels = function(labelList) {
