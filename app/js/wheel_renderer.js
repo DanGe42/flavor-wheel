@@ -1,10 +1,10 @@
 import Coordinate from './svg/coordinate';
 import { exists, withDefault } from './common/base';
+import { document } from './common/browser';
 import { removeAllChildren } from './common/dom';
 import { mustExist, checkState } from './common/preconditions';
 
-export default function WheelRenderer(document, container, options) {
-  this.document = document;
+export default function WheelRenderer(container, options) {
   this.svgContainer = container;
 
   options = options || {};
@@ -229,7 +229,7 @@ WheelRenderer.prototype._makeLine = function(c1, c2) {
 };
 
 WheelRenderer.prototype._newSvgElement = function(tag, attrs) {
-  const element = this.document.createElementNS("http://www.w3.org/2000/svg", tag);
+  const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
   for (let attr in attrs) {
     if (attrs.hasOwnProperty(attr)) {
       let value = attrs[attr];

@@ -12,6 +12,9 @@
 require('../css/main.scss');
 
 import WheelMediator from './wheel';
+import { initEnvironment } from './common/browser';
+
+initEnvironment(window);
 
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -43,7 +46,7 @@ window.onload = function() {
     tickCount: 5,
     categories: categories
   });
-  const renderer = mediator.createRendererWithSelector(document, '#tasting-wheel-container');
+  const renderer = mediator.createRendererWithSelector('#tasting-wheel-container');
   renderer.renderBase();
   renderer.renderData(
     Array(16).fill(null).map(() => getRandomIntInclusive(1, 5)),
