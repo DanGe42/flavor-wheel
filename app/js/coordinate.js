@@ -24,6 +24,17 @@ function Coordinate(coords) {
   this._throwIfInvalid();
 }
 
+// Normalize for SVG coordinate system (origin is top-left)
+// When computing math, these properties should never be used. These should only
+// be accessed when setting positions for SVG elements.
+Object.defineProperty(Coordinate.prototype, 'svgX', {
+  get: function() { return this.x; }
+});
+
+Object.defineProperty(Coordinate.prototype, 'svgY', {
+  get: function() { return -this.y; }
+});
+
 Coordinate.prototype.toString = function() {
   return `{xy=(${this.x}, ${this.y}), polar=(${this.r}, ${this.theta} rad)}`;
 };

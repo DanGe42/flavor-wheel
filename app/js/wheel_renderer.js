@@ -65,7 +65,7 @@ WheelRenderer.prototype.renderRadii = function(radiiList) {
     return new Coordinate({r: radius, theta: theta});
   });
 
-  const polygonPoints = points.map(coord => `${coord.x},${coord.y}`).join(' ');
+  const polygonPoints = points.map(coord => `${coord.svgX},${coord.svgY}`).join(' ');
   const polygon = this._newSvgElement('polygon', {
     class: 'data__poly',
     points: polygonPoints,
@@ -75,7 +75,7 @@ WheelRenderer.prototype.renderRadii = function(radiiList) {
   const dots = points.map(coord => {
     return this._newSvgElement('circle', {
       class: 'data__point',
-      cx: coord.x, cy: coord.y, r: 4
+      cx: coord.svgX, cy: coord.svgY, r: 4
     })
   });
 
@@ -133,8 +133,8 @@ WheelRenderer.prototype._drawRays = function(rayCount) {
 
 WheelRenderer.prototype._makeLine = function(c1, c2) {
   return this._newSvgElement('line', {
-    x1: c1.x, y1: c1.y,
-    x2: c2.x, y2: c2.y
+    x1: c1.svgX, y1: c1.svgY,
+    x2: c2.svgX, y2: c2.svgY
   });
 };
 
