@@ -4,11 +4,18 @@ import { document } from './common/browser';
 import { removeAllChildren } from './common/dom';
 import { mustExist, checkState } from './common/preconditions';
 import { createSVGElement } from './svg/dom';
+import {
+  makeLine,
+  makeRoot,
+  makeGroup,
+  makeCircle,
+  makePolygon
+} from './svg/shapes';
+import { makeMultilinedText, repositionMultilinedText } from './svg/text';
 
-export default function WheelRenderer(container, options) {
+export default function WheelRenderer(container, options = {}) {
   this.svgContainer = container;
 
-  options = options || {};
   const {
     radius, drawingRadius, viewBox, id, rayCount, ringCount
   } = options;
@@ -27,11 +34,7 @@ function computeViewBox(drawnRadius) {
 }
 
 WheelRenderer.prototype.renderBase = function() {
-  const svg = createSVGElement('svg', {
-    version: '1.1',
-    baseProfile: 'full',
-    viewBox: this.viewBox
-  });
+  const svg = makeRoot({viewBox: this.viewBox});
   if (exists(this.id)) {
     svg.setAttribute('id', this.id);
   }
@@ -43,9 +46,9 @@ WheelRenderer.prototype.renderBase = function() {
   const rayGroup = this._drawRays(this.rayCount);
   svg.appendChild(rayGroup);
 
-  const debug = createSVGElement('g', { class: 'debug' });
-  const labels = createSVGElement('g', { class: 'labels hidden' });
-  const data = createSVGElement('g', { class: 'data' });
+  const debug = makeGroup({ class: 'debug' });
+  const labels = makeGroup({ class: 'labels hidden' });
+  const data = makeGroup({ class: 'data' });
   svg.appendChild(debug);
   svg.appendChild(labels);
   svg.appendChild(data);
@@ -66,23 +69,23 @@ WheelRenderer.prototype._debugRect = function(coord, bbox, data) {
 };
 
 WheelRenderer.prototype._debugRay = function(coord, data) {
-  const line = this._makeLine(new Coordinate({x: 0, y: 0}), coord);
-  line.setAttribute('data-debug', data || '');
+  const line = makeLine(
+    new Coordinate({x: 0, y: 0}), coord, {
+      'data-debug': data || ''
+    });
   this.debugGroup.appendChild(line);
-};
-
-WheelRenderer.prototype._clearDebug = function() {
-  removeAllChildren(this.debugGroup);
 };
 
 WheelRenderer.prototype.renderLabels = function(labelList) {
   checkState(this.rayCount == labelList.length,
     'Length of labels must match number of rays');
 
-  // Preload text labels so that we can get their bounding box.
+  // Create text labels and add them to the DOM. Ensure that the group we add to
+  // is hidden. We have to render these labels first in order to get their
+  // bounding box.
   // The `texts` array ordering corresponds to the label ordering.
   this.labelGroup.classList.add('hidden');
-  let texts = this._createTextNodes(labelList);
+  const texts = labelList.map(labelText => makeMultilinedText(labelText, '1em'));
   texts.forEach(text => this.labelGroup.appendChild(text));
 
   // As a result of adding the texts to the DOM, they get rendered in accordance
@@ -101,8 +104,7 @@ WheelRenderer.prototype.renderLabels = function(labelList) {
     const theta = (2 * i / this.rayCount) * Math.PI;
     const labelCenter = new Coordinate({r: labelRadius, theta: theta});
 
-    const width = text.getBBox().width;
-    const height = text.getBBox().height;
+    const { width, height } = text.getBBox();
 
     // 3. Place a text box centered at the intersection
     // Label draw point is the top-left corner of the bounding box
@@ -112,21 +114,11 @@ WheelRenderer.prototype.renderLabels = function(labelList) {
       x: labelCenter.x - width / 2,
       y: labelCenter.y + height / 2
     });
-    repositionText(text, labelOrigin);
+    repositionMultilinedText(text, labelOrigin);
   });
 
   this.labelGroup.classList.remove('hidden');
 };
-
-function repositionText(text, coordinate) {
-  text.setAttribute('x', coordinate.svgX);
-  text.setAttribute('y', coordinate.svgY);
-  const tspans = text.children;
-  for (let i = 0; i < tspans.length; i += 1) {
-    let tspan = tspans[i];
-    tspan.setAttribute('x', coordinate.svgX);
-  }
-}
 
 WheelRenderer.prototype.renderData = function(dataPoints, upperBound) {
   mustExist(upperBound);
@@ -142,19 +134,12 @@ WheelRenderer.prototype.renderRadii = function(radiiList) {
     return new Coordinate({r: radius, theta: theta});
   });
 
-  const polygonPoints = points.map(coord => `${coord.svgX},${coord.svgY}`).join(' ');
-  const polygon = createSVGElement('polygon', {
+  const polygon = makePolygon(points, {
     class: 'data__poly',
-    points: polygonPoints,
     "stroke-width": 4
   });
 
-  const dots = points.map(coord => {
-    return createSVGElement('circle', {
-      class: 'data__point',
-      cx: coord.svgX, cy: coord.svgY, r: 4
-    })
-  });
+  const dots = points.map(coord => makeCircle(coord, 4, {class: 'data__point'}));
 
   removeAllChildren(this.dataGroup);
   this.dataGroup.appendChild(polygon);
@@ -165,28 +150,13 @@ WheelRenderer.prototype.scaleToRadius = function(value, upperBound) {
   return value * this.radius / upperBound;
 };
 
-WheelRenderer.prototype._createTextNodes = function(labels) {
-  return labels.map(labelText => {
-    const lines = labelText.split('\n');
-    const text = createSVGElement('text');
-    lines.forEach(line => {
-      const tspan = createSVGElement('tspan', {x: 0, dy: '1em'});
-      tspan.textContent = line;
-      text.appendChild(tspan);
-    });
-
-    return text;
-  });
-};
-
 WheelRenderer.prototype._drawRings = function(ringCount) {
   // First create the ring group
-  const g = createSVGElement('g', { class: 'grid__circle' });
+  const g = makeGroup({ class: 'grid__circle' });
 
   // Create the outer circle
-  const outerCircle = createSVGElement('circle', {
+  const outerCircle = makeCircle(Coordinate.ORIGIN, this.radius, {
     class: 'circle__outer',
-    cx: 0, cy: 0, r: this.radius,
     "stroke-width": 6, fill: 'none'
   });
   g.appendChild(outerCircle);
@@ -194,10 +164,9 @@ WheelRenderer.prototype._drawRings = function(ringCount) {
   // Build inner circles. Subtract 1 because we've build the outer circle, and
   // start at 1 because we won't draw the origin.
   for (let i = 1; i <= ringCount - 1; i += 1) {
-    let ring = createSVGElement('circle', {
+    let radius = i * (this.radius / ringCount);
+    let ring = makeCircle(Coordinate.ORIGIN, radius, {
       class: 'circle__inner',
-      cx: 0, cy: 0,
-      r: i * (this.radius / ringCount),
       "stroke-width": 3, fill: 'none'
     });
     g.appendChild(ring);
@@ -207,24 +176,17 @@ WheelRenderer.prototype._drawRings = function(ringCount) {
 };
 
 WheelRenderer.prototype._drawRays = function(rayCount) {
-  const g = createSVGElement('g', { class: 'ray-grid' });
+  const g = makeGroup({ class: 'ray-grid' });
 
   const origin = new Coordinate({x: 0, y: 0});
   // Draw each ray from the origin to the perimeter
   for (let i = 0; i < rayCount; i += 1) {
     let theta = (2 * i / rayCount) *  Math.PI;
     let endPoint = new Coordinate({r: this.radius, theta: theta});
-    let line = this._makeLine(origin, endPoint);
+    let line = makeLine(origin, endPoint);
     line.setAttribute('stroke-width', 1);
     g.appendChild(line);
   }
 
   return g;
-};
-
-WheelRenderer.prototype._makeLine = function(c1, c2) {
-  return createSVGElement('line', {
-    x1: c1.svgX, y1: c1.svgY,
-    x2: c2.svgX, y2: c2.svgY
-  });
 };

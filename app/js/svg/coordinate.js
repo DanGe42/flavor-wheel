@@ -45,4 +45,6 @@ Coordinate.prototype._throwIfInvalid = function() {
   }
 };
 
+Coordinate.ORIGIN = new Coordinate({x: 0, y: 0});
+
 export default Coordinate;
