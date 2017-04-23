@@ -21,7 +21,6 @@ export default function WheelRenderer(container, options = {}) {
     radius, drawingRadius, viewBox, id, rayCount, ringCount
   } = options;
 
-  this.id = id;
   this.radius = withDefault(radius, 250);
   // Total circle radius is 250, but depending on styling, you may have to
   // adjust further.
@@ -36,9 +35,6 @@ function computeViewBox(drawnRadius) {
 
 WheelRenderer.prototype.renderBase = function() {
   const svg = makeRoot({viewBox: this.viewBox});
-  if (exists(this.id)) {
-    svg.setAttribute('id', this.id);
-  }
   this.svgContainer.appendChild(svg);
 
   const circleGroup = this._drawRings(this.ringCount);
