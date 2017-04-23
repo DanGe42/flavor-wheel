@@ -11,15 +11,74 @@
 // Don't you love frontend development?
 require('../css/main.scss');
 
+import { setAttributes } from './common/dom';
 import WheelMediator from './wheel';
 import { initEnvironment } from './common/browser';
 
 initEnvironment(window);
 
+const groupClass = 'wheel-control__form__group';
+const rangeClass = 'wheel-control__form__range';
+const labelClass = 'wheel-control__form__label';
+
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function normalizeCategoryForName(category) {
+  return category.replace(/[ \n/]+/, '-');
+}
+
+function buildInputGroup(inputGroup, categories) {
+  categories.forEach(category => {
+    const name = normalizeCategoryForName(category);
+    const group = document.createElement('div');
+    setAttributes(group, {class: groupClass});
+
+    const input = document.createElement('input');
+    setAttributes(input, {
+      name: name,
+      class: rangeClass,
+      type: 'range',
+      min: 1, max: 5, step: 1, value: getRandomIntInclusive(1, 5),
+      'data-category': category
+    });
+
+    const label = document.createElement('label');
+    setAttributes(label, {for: name, class: labelClass});
+    label.textContent = category;
+
+    group.appendChild(label);
+    group.appendChild(input);
+    inputGroup.appendChild(group);
+  });
+}
+
+function getData(form) {
+  const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
+  return inputs.map(input => parseInt(input.value, 10));
+}
+
+// TODO: too many args
+function setupUpdate(form, renderer, categories) {
+  const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
+  const container = document.getElementById('tasting-wheel-container');
+  inputs.forEach(input => {
+    input.addEventListener('change', () => {
+      if (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      buildWheel(renderer, getData(form), categories);
+    });
+  });
+}
+
+function buildWheel(renderer, data, categories) {
+  renderer.renderBase();
+  renderer.renderData(data, 5);
+  renderer.renderLabels(categories);
 }
 
 window.onload = function() {
@@ -41,15 +100,15 @@ window.onload = function() {
     'citrus\nfruit',
     'berry\nfruit'
   ];
+  const inputGroup = document.getElementById('wheel-control__form');
+  buildInputGroup(inputGroup, categories);
   const mediator = new WheelMediator({
     maxValue: 5,
     tickCount: 5,
     categories: categories
   });
   const renderer = mediator.createRendererWithSelector('#tasting-wheel-container');
-  renderer.renderBase();
-  renderer.renderData(
-    Array(16).fill(null).map(() => getRandomIntInclusive(1, 5)),
-    5);
-  renderer.renderLabels(categories);
+
+  buildWheel(renderer, getData(inputGroup), categories);
+  setupUpdate(inputGroup, renderer, categories);
 };
