@@ -1,7 +1,7 @@
 import Coordinate from './svg/coordinate';
 import { exists, withDefault } from './common/base';
 import { document } from './common/browser';
-import { removeAllChildren } from './common/dom';
+import { removeAllChildren, appendChildren } from './common/dom';
 import { mustExist, checkState } from './common/preconditions';
 import { createSVGElement } from './svg/dom';
 import {
@@ -11,6 +11,7 @@ import {
   makeCircle,
   makePolygon
 } from './svg/shapes';
+import { serializePoints } from './svg/util';
 import { makeMultilinedText, repositionMultilinedText } from './svg/text';
 
 export default function WheelRenderer(container, options = {}) {
@@ -41,23 +42,19 @@ WheelRenderer.prototype.renderBase = function() {
   this.svgContainer.appendChild(svg);
 
   const circleGroup = this._drawRings(this.ringCount);
-  svg.appendChild(circleGroup);
-
   const rayGroup = this._drawRays(this.rayCount);
-  svg.appendChild(rayGroup);
-
   const debug = makeGroup({ class: 'debug' });
   const labels = makeGroup({ class: 'labels hidden' });
   const data = makeGroup({ class: 'data' });
-  svg.appendChild(debug);
-  svg.appendChild(labels);
-  svg.appendChild(data);
-
-  this.svgContainer.appendChild(svg);
 
   this.debugGroup = debug;
   this.labelGroup = labels;
   this.dataGroup = data;
+
+  // This is order dependent: last one is drawn on top.
+  appendChildren(svg, [circleGroup, rayGroup, debug, labels, data]);
+
+  this.svgContainer.appendChild(svg);
 };
 
 WheelRenderer.prototype._debugRect = function(coord, bbox, data) {
@@ -69,8 +66,7 @@ WheelRenderer.prototype._debugRect = function(coord, bbox, data) {
 };
 
 WheelRenderer.prototype._debugRay = function(coord, data) {
-  const line = makeLine(
-    new Coordinate({x: 0, y: 0}), coord, {
+  const line = makeLine(Coordinate.ORIGIN, coord, {
       'data-debug': data || ''
     });
   this.debugGroup.appendChild(line);
@@ -86,7 +82,7 @@ WheelRenderer.prototype.renderLabels = function(labelList) {
   // The `texts` array ordering corresponds to the label ordering.
   this.labelGroup.classList.add('hidden');
   const texts = labelList.map(labelText => makeMultilinedText(labelText, '1em'));
-  texts.forEach(text => this.labelGroup.appendChild(text));
+  appendChildren(this.labelGroup, texts);
 
   // As a result of adding the texts to the DOM, they get rendered in accordance
   // to any supplied CSS rules as well. So, let's render them in the proper
@@ -143,7 +139,7 @@ WheelRenderer.prototype.renderRadii = function(radiiList) {
 
   removeAllChildren(this.dataGroup);
   this.dataGroup.appendChild(polygon);
-  dots.forEach(dot => this.dataGroup.appendChild(dot));
+  appendChildren(this.dataGroup, dots);
 };
 
 WheelRenderer.prototype.scaleToRadius = function(value, upperBound) {
@@ -178,12 +174,11 @@ WheelRenderer.prototype._drawRings = function(ringCount) {
 WheelRenderer.prototype._drawRays = function(rayCount) {
   const g = makeGroup({ class: 'ray-grid' });
 
-  const origin = new Coordinate({x: 0, y: 0});
   // Draw each ray from the origin to the perimeter
   for (let i = 0; i < rayCount; i += 1) {
     let theta = (2 * i / rayCount) *  Math.PI;
     let endPoint = new Coordinate({r: this.radius, theta: theta});
-    let line = makeLine(origin, endPoint);
+    let line = makeLine(Coordinate.ORIGIN, endPoint);
     line.setAttribute('stroke-width', 1);
     g.appendChild(line);
   }

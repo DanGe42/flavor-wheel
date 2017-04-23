@@ -19,3 +19,10 @@ export function setAttributes(element, attrs) {
     }
   }
 };
+
+export function appendChildren(parent, children) {
+  for (let i = 0; i < children.length; i += 1) {
+    let child = children[i];
+    parent.appendChild(child);
+  }
+}

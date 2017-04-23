@@ -1,4 +1,5 @@
 import { createSVGElement } from './dom';
+import { serializePoints } from './util';
 
 function ext(target, source) {
   return Object.assign(target, source);
@@ -30,7 +31,7 @@ export function makeCircle(center, radius, attrs = {}) {
 }
 
 export function makePolygon(coordList, attrs = {}) {
-  const points = coordList.map(coord => `${coord.svgX},${coord.svgY}`).join(' ');
+  const points = serializePoints(coordList);
   return createSVGElement('polygon', ext({
     points: points
   }, attrs));
