@@ -1,34 +1,58 @@
-.circle__outer {
+.ring-grid__circle--outer {
   stroke: #000;
 }
 
-.circle__inner {
+.ring-grid__circle {
+  fill: none;
   stroke: #000;
+  stroke-width: 3;
+
+  &:last-child {
+    stroke-width: 6
+  }
 }
 
-.ray-grid > line {
+.ray-grid__ray {
   stroke: #000;
+  stroke-width: 1;
 }
 
-.data__poly {
+.data-polyline__path {
   stroke: #00F;
-  fill: rgba(0, 128, 255, 0.5);
-}
-
-.data__point {
   stroke-width: 4;
+  fill: rgba(0, 128, 255, 0.5);
+
+  &:nth-child(2) {
+    stroke: #0F0;
+    fill: rgba(128, 255, 128, 0.5);
+  }
+}
+
+.data-points__point {
   stroke: #00F;
+  stroke-width: 4;
   fill: #FFF;
 
   &:hover {
     cursor: pointer;
-    stroke-width: 5;
     stroke: #F00;
     fill: #00F;
   }
 }
 
-.labels {
+.data-points__point-group:nth-child(2) {
+  .data-points__point {
+    stroke: #0F0;
+
+    &:hover {
+      cursor: pointer;
+      stroke: #F00;
+      fill: #0F0;
+    }
+  }
+}
+
+.flavor-labels__label {
   font-family: sans-serif;
   font-size: 20px;
   text-transform: uppercase;
@@ -38,29 +62,21 @@
   }
 }
 
-.debug {
-  rect {
-    stroke: none;
-    fill: rgba(0, 0, 0, .5);
-  }
-  line {
-    stroke: #F00;
-    stroke-width: 3;
-  }
+.page-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start
 }
 
-.col-2 {
-  .col-2-1, .col-2-2 {
-    display: inline-block;
-    width: 49%;
-  }
+.page-container__wheel-control, .page-container__wheel-container {
+  flex: 1 100%;
 }
 
-.wheel-control__form__group {
+.wheel-control__form-group {
   margin: 1em 0;
 }
 
-.wheel-control__form__label {
+.form-group__label {
   display: inline-block;
   width: 100px;
 }

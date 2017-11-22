@@ -11,15 +11,12 @@
 // Don't you love frontend development?
 require('../css/main.scss');
 
-import { setAttributes } from './common/dom';
-import WheelMediator from './wheel';
-import { initEnvironment } from './common/browser';
+import * as d3 from 'd3';
+import FlavorWheel from './flavor-wheel/flavor-wheel';
 
-initEnvironment(window);
-
-const groupClass = 'wheel-control__form__group';
-const rangeClass = 'wheel-control__form__range';
-const labelClass = 'wheel-control__form__label';
+const groupClass = 'wheel-control__form-group';
+const rangeClass = 'form-group__range';
+const labelClass = 'form-group__label';
 
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -32,83 +29,83 @@ function normalizeCategoryForName(category) {
 }
 
 function buildInputGroup(inputGroup, categories) {
-  categories.forEach(category => {
-    const name = normalizeCategoryForName(category);
-    const group = document.createElement('div');
-    setAttributes(group, {class: groupClass});
+  const formGroups = d3.select(inputGroup)
+    .selectAll('div')
+    .data(categories)
+    .enter().append('div')
+    .attr('class', groupClass);
 
-    const input = document.createElement('input');
-    setAttributes(input, {
-      name: name,
-      class: rangeClass,
-      type: 'range',
-      min: 1, max: 5, step: 1, value: getRandomIntInclusive(1, 5),
-      'data-category': category
-    });
+  formGroups
+    .append('label')
+    .attr('class', labelClass)
+    .attr('for', category => normalizeCategoryForName(category))
+    .text(category => category);
 
-    const label = document.createElement('label');
-    setAttributes(label, {for: name, class: labelClass});
-    label.textContent = category;
-
-    group.appendChild(label);
-    group.appendChild(input);
-    inputGroup.appendChild(group);
-  });
+  formGroups
+    .append('input')
+    .attr('class', rangeClass)
+    .attr('name', category => normalizeCategoryForName(category))
+    .attr('type', 'range')
+    .attr('min', 1).attr('max', 5).attr('step', 1)
+    .attr('value', _ignored => getRandomIntInclusive(1, 5))
+    .attr('data-category', category => category);
 }
 
 function getData(form) {
   const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
-  return inputs.map(input => parseInt(input.value, 10));
+  return inputs.map(input => {
+    const label = input.getAttribute('data-category');
+    const value = parseInt(input.value, 10);
+    return { label, value };
+  });
 }
 
 // TODO: too many args
-function setupUpdate(form, renderer, categories) {
+function setupUpdate(form, wheel) {
   const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
-  const container = document.getElementById('tasting-wheel-container');
   inputs.forEach(input => {
     input.addEventListener('change', () => {
-      if (container.firstChild) {
-        container.removeChild(container.firstChild);
-      }
-      buildWheel(renderer, getData(form), categories);
+      wheel.addData(getData(form), '2');
     });
   });
 }
 
-function buildWheel(renderer, data, categories) {
-  renderer.renderBase();
-  renderer.renderData(data, 5);
-  renderer.renderLabels(categories);
-}
+const testData = [
+  { label: 'salty', value: 1 },
+  { label: 'spicy', value: 2 },
+  { label: 'floral', value: 3 },
+  { label: 'sour/tart', value: 4 },
+  { label: 'sweet', value: 5 },
+  { label: 'linger/\nfinish', value: 1 },
+  { label: 'clean', value: 2 },
+  { label: 'body', value: 3 },
+  { label: 'savory', value: 4 },
+  { label: 'bitter', value: 5 },
+  { label: 'smoky', value: 1 },
+  { label: 'caramel', value: 2 },
+  { label: 'chocolate', value: 3 },
+  { label: 'stone\nfruit', value: 4 },
+  { label: 'citrus\nfruit', value: 5 },
+  { label: 'berry\nfruit', value: 1 }
+];
+
+const CATEGORIES = testData.map(({ label }) => label);
 
 window.onload = function() {
-  const categories = [
-    'salty',
-    'spicy',
-    'floral',
-    'sour/tart',
-    'sweet',
-    'linger/\nfinish',
-    'clean',
-    'body',
-    'savory',
-    'bitter',
-    'smoky',
-    'caramel',
-    'chocolate',
-    'stone\nfruit',
-    'citrus\nfruit',
-    'berry\nfruit'
-  ];
-  const inputGroup = document.getElementById('wheel-control__form');
-  buildInputGroup(inputGroup, categories);
-  const mediator = new WheelMediator({
-    maxValue: 5,
-    tickCount: 5,
-    categories: categories
-  });
-  const renderer = mediator.createRendererWithSelector('#tasting-wheel-container');
+  const inputGroup = document.getElementById('wheel-control-form');
+  if (inputGroup) {
+    buildInputGroup('#wheel-control-form', CATEGORIES);
 
-  buildWheel(renderer, getData(inputGroup), categories);
-  setupUpdate(inputGroup, renderer, categories);
+    const wheel = FlavorWheel.initialize("#d3wheel", {
+      maxRating: 5,
+      gridRadius: 250,
+      viewWidth: 800,
+      labels: CATEGORIES
+    });
+
+    wheel.addData(testData, '1');
+    wheel.addData(getData(inputGroup), '2');
+
+    setupUpdate(inputGroup, wheel);
+  }
 };

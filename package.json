@@ -10,11 +10,16 @@
     "webpack:dev": "webpack-dev-server"
   },
   "devDependencies": {
+    "babel-loader": "^7.1.2",
     "css-loader": "^0.28.0",
     "extract-text-webpack-plugin": "^2.1.0",
     "node-sass": "^4.5.2",
     "sass-loader": "^6.0.3",
     "webpack": "^2.4.1",
     "webpack-dev-server": "^2.4.2"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "d3": "^4.11.0"
   }
 }

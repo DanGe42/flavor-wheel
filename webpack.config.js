@@ -18,6 +18,15 @@ module.exports = {
   entry: './app/js/main.js',
 
   module: {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['es2015']
+        }
+      }
+    ],
     rules: [{
       // SCSS compilation rules (requires sass-loader, css-loader)
       test: /\.scss$/,
