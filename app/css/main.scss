@@ -68,7 +68,11 @@
   align-items: flex-start
 }
 
-.page-container__wheel-control, .page-container__wheel-container {
+.page-container__wheel-control {
+  flex: 0 0 auto;
+}
+
+.page-container__wheel-container {
   flex: 1 100%;
 }
 
