@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import { invertArray } from '../util/arrays';
+import { mustExist, checkState } from '../../common/preconditions';
 
 class FlavorWheelConfig {
     /**
@@ -16,9 +17,9 @@ class FlavorWheelConfig {
      * ```
      */
     constructor(config) {
-        if (!config.labels || config.labels.length < 1) {
-            throw new Error('At least 1 label required');
-        }
+        mustExist(config, 'a config object is required');
+        mustExist(config.labels, 'config.labels must be specified');
+        checkState(config.labels.length >= 1, 'config.labels must be non-empty');
 
         this.maxRating = config.maxRating || 5;
         this.gridRadius = config.gridRadius || 250;
