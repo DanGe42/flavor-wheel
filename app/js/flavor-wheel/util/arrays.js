@@ -7,7 +7,7 @@
  * > invertArray(['a', 'b', 'c'])
  * Map { 'a' => 0, 'b' => 1, 'c' => 2 }
  * ```
- * @param {*[any]} array  The array to invert.
+ * @param {[any]} array  The array to invert.
  */
 export function invertArray(array) {
   const inverse = new Map();
@@ -27,7 +27,7 @@ export function invertArray(array) {
  * [1, 2, 3, 4, 1]
  * ```
  *
- * @param {*[any]} array  The array to wrap around.
+ * @param {[any]} array  The array to wrap around.
  */
 export function wrapAroundArray(array) {
   const first = array[0];

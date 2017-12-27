@@ -60,7 +60,6 @@ function getData(form) {
   });
 }
 
-// TODO: too many args
 function setupUpdate(form, wheel) {
   const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
   inputs.forEach(input => {
