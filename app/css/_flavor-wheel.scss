@@ -1,0 +1,63 @@
+.ring-grid__circle--outer {
+  stroke: #000;
+}
+
+.ring-grid__circle {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3;
+
+  &:last-child {
+    stroke-width: 6
+  }
+}
+
+.ray-grid__ray {
+  stroke: #000;
+  stroke-width: 1;
+}
+
+.data-polyline__path {
+  stroke: #00F;
+  stroke-width: 4;
+  fill: rgba(0, 128, 255, 0.5);
+
+  &:nth-child(2) {
+    stroke: #0F0;
+    fill: rgba(128, 255, 128, 0.5);
+  }
+}
+
+.data-points__point {
+  stroke: #00F;
+  stroke-width: 4;
+  fill: #FFF;
+
+  &:hover {
+    cursor: pointer;
+    stroke: #F00;
+    fill: #00F;
+  }
+}
+
+.data-points__point-group:nth-child(2) {
+  .data-points__point {
+    stroke: #0F0;
+
+    &:hover {
+      cursor: pointer;
+      stroke: #F00;
+      fill: #0F0;
+    }
+  }
+}
+
+.flavor-labels__label {
+  font-family: sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+
+  &.hidden {
+    fill: rgba(0, 0, 0, 0);
+  }
+}
