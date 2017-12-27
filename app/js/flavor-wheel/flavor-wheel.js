@@ -1,7 +1,9 @@
 import * as d3 from 'd3';
 
+import Datum from './internal/datum';
 import FlavorWheelConfig from './internal/config';
 import GridRenderer from './internal/grid-renderer';
+
 import { invertArray, wrapAroundArray } from './util/arrays';
 import Coordinate from './util/coordinate';
 
@@ -47,7 +49,7 @@ class FlavorWheel {
     }
 
     _pushData(data, key, className = null) {
-        data = this._preprocessData(data);
+        data = data.map(({ label, value }) => new Datum(this.config, label, value));
         const existingData = this.dataSeries.find(ds => ds.key === key);
 
         if (!existingData) {
@@ -56,20 +58,6 @@ class FlavorWheel {
             existingData.data = data;
             existingData.className = className;
         }
-    }
-
-    // Convert raw rating data to coordinates ahead of time
-    _preprocessData(data) {
-        const config = this.config;
-        return data.map(({ label, value }) => {
-            const index = config.getLabelIndex(label);
-
-            const r = config.ratingRadialScale(value);
-            const theta = config.labelAngularScale(index);
-
-            const coordinate = Coordinate.polar({ r, theta });
-            return { label, coordinate };
-        });
     }
 
     _renderData() {
