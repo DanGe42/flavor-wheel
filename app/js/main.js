@@ -14,9 +14,10 @@ require('../css/main.scss');
 import * as d3 from 'd3';
 import FlavorWheel from './flavor-wheel/flavor-wheel';
 
-const groupClass = 'wheel-control__form-group';
-const rangeClass = 'form-group__range';
-const labelClass = 'form-group__label';
+const WHEEL_CONTROL_FORM_ID = 'wheel-control-form';
+const FORM_GROUP_CLASS = 'wheel-control__form-group';
+const RANGE_CLASS = 'form-group__range';
+const LABEL_CLASS = 'form-group__label';
 
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
@@ -33,17 +34,17 @@ function buildInputGroup(inputGroup, categories) {
     .selectAll('div')
     .data(categories)
     .enter().append('div')
-    .attr('class', groupClass);
+    .attr('class', FORM_GROUP_CLASS);
 
   formGroups
     .append('label')
-    .attr('class', labelClass)
+    .attr('class', LABEL_CLASS)
     .attr('for', category => normalizeCategoryForName(category))
     .text(category => category);
 
   formGroups
     .append('input')
-    .attr('class', rangeClass)
+    .attr('class', RANGE_CLASS)
     .attr('name', category => normalizeCategoryForName(category))
     .attr('type', 'range')
     .attr('min', 1).attr('max', 5).attr('step', 1)
@@ -52,7 +53,7 @@ function buildInputGroup(inputGroup, categories) {
 }
 
 function getData(form) {
-  const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
+  const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${RANGE_CLASS}`));
   return inputs.map(input => {
     const label = input.getAttribute('data-category');
     const value = parseInt(input.value, 10);
@@ -61,7 +62,7 @@ function getData(form) {
 }
 
 function setupUpdate(form, wheel) {
-  const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${rangeClass}`));
+  const inputs = Array.prototype.slice.call(form.querySelectorAll(`.${RANGE_CLASS}`));
   inputs.forEach(input => {
     input.addEventListener('change', () => {
       wheel.addData(getData(form), '2');
@@ -91,9 +92,9 @@ const testData = [
 const CATEGORIES = testData.map(({ label }) => label);
 
 window.onload = function() {
-  const inputGroup = document.getElementById('wheel-control-form');
+  const inputGroup = document.getElementById(WHEEL_CONTROL_FORM_ID);
   if (inputGroup) {
-    buildInputGroup('#wheel-control-form', CATEGORIES);
+    buildInputGroup(`#${WHEEL_CONTROL_FORM_ID}`, CATEGORIES);
 
     const wheel = FlavorWheel.initialize("#d3wheel", {
       maxRating: 5,
