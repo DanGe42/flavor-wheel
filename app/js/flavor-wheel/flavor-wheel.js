@@ -15,7 +15,7 @@ class FlavorWheel {
         this.dataPointsGroup = rootSvg.select('.flavor-wheel__data-points');
         this.dataPolyGroup = rootSvg.select('.flavor-wheel__data-polyline');
 
-        this.dataSeries = [];
+        this.flavorProfiles = [];
     }
 
     /**
@@ -50,10 +50,19 @@ class FlavorWheel {
 
     _pushData(data, key, className = null) {
         data = data.map(({ label, value }) => new Datum(this.config, label, value));
-        const existingData = this.dataSeries.find(ds => ds.key === key);
+        // _renderData() doesn't do anything explicit with the order of the
+        // data, so here we sort according to the original order specified in
+        // config.labels.
+        data.sort((d1, d2) => {
+            const config = this.config;
+            const lIndex1 = config.getLabelIndex(d1.label);
+            const lIndex2 = config.getLabelIndex(d2.label);
+            return lIndex1 - lIndex2;
+        });
+        const existingData = this.flavorProfiles.find(profile => profile.key === key);
 
         if (!existingData) {
-            this.dataSeries.push({ data, key, className });
+            this.flavorProfiles.push({ data, key, className });
         } else {
             existingData.data = data;
             existingData.className = className;
@@ -62,31 +71,50 @@ class FlavorWheel {
 
     _renderData() {
         const config = this.config;
-        const dataSeries = this.dataSeries;
+        const flavorProfiles = this.flavorProfiles;
 
         const polyPointGenerator = d3.line()
             .x(datum => datum.coordinate.svgX)
             .y(datum => datum.coordinate.svgY);
 
-        this.dataPolyGroup.selectAll('path')
-            .data(dataSeries, ds => ds.key)
-            .enter()
-            .append('path')
+        // https://bl.ocks.org/mbostock/3808218
+        // First, rebind data and update existing paths with new data
+        const dataPaths = this.dataPolyGroup.selectAll('path')
+            .data(flavorProfiles, profile => profile.key);
+
+        // Create new paths
+        dataPaths.enter().append('path')
             .attr('class', 'data-polyline__path')
-            .attr('d', ds => polyPointGenerator(wrapAroundArray(ds.data)))
-            .exit();
+            // And, together with the new paths, update from the newly bound data
+            .merge(dataPaths)
+            .attr('d', profile => polyPointGenerator(wrapAroundArray(profile.data)));
 
-        const pointsForSeries = this.dataPointsGroup.selectAll('g')
-            .data(dataSeries, ds => ds.key)
-            .enter().append('g')
-            .attr('class', 'data-points__point-group');
+        // Remove anything we removed. Not technically implemented yet.
+        dataPaths.exit().remove();
 
-        pointsForSeries.selectAll('circle').data(ds => ds.data)
-            .enter().append('circle')
+        let pointGroups = this.dataPointsGroup.selectAll('g')
+            .data(flavorProfiles, profile => profile.key);
+
+        pointGroups.exit().remove();
+
+        // Add new groups and merge it with existing groups so that we can
+        // update the data binding for each new and existing point within
+        // those groups.
+        pointGroups = pointGroups.enter().append('g')
+            .attr('class', 'data-points__point-group')
+            .merge(pointGroups);
+
+        const flavorPoints = pointGroups.selectAll('circle')
+            .data(profile => profile.data);
+
+        flavorPoints.enter().append('circle')
             .attr('class', 'data-points__point')
+            .attr('r', 4)
+            .merge(flavorPoints)
             .attr('cx', datum => datum.coordinate.svgX)
-            .attr('cy', datum => datum.coordinate.svgY)
-            .attr('r', 4);
+            .attr('cy', datum => datum.coordinate.svgY);
+
+        flavorPoints.exit().remove();
     }
 }
 
