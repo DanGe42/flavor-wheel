@@ -4,10 +4,16 @@ import Datum from './internal/datum';
 import FlavorWheelConfig from './internal/config';
 import GridRenderer from './internal/grid-renderer';
 
+import { mustExist } from '../common/preconditions';
 import { invertArray, wrapAroundArray } from './util/arrays';
 import Coordinate from './util/coordinate';
 
 class FlavorWheel {
+    /**
+     * Constructs a new FlavorWheel. This constructor does not initialize the
+     * required SVG structure, and thus, the preferred way to create
+     * a FlavorWheel is via the static `FlavorWheel.initialize` method.
+     */
     constructor({ rootSvg, config }) {
         this.rootSvg = rootSvg;
         this.config = config;
@@ -19,8 +25,29 @@ class FlavorWheel {
     }
 
     /**
+     * Initializes a FlavorWheel. This is the preferred way to create a
+     * FlavorWheel. This sets up the required SVG elements to render a grid,
+     * and returns a FlavorWheel object over the SVG.
      *
-     * @param {object} config
+     * A typical invocation might look like this:
+     *
+     * ```js
+     * const wheel = FlavorWheel.initialize("#wheel", {
+     *   maxRating: 5,
+     *   gridRadius: 250,
+     *   viewWidth: 800,
+     *   labels: ['smoky', 'berry\nfruit', 'bitter', 'sweet', 'sour', 'floral']
+     * });
+     * ```
+     *
+     * See documentation in flavor-wheel/internal/config.js for configuration
+     * details.
+     *
+     * @param {(string|Element)} targetSelector - A selector string passed to
+     *      `d3.select`. Can also be an Element. See documentation on
+     *      `d3.select` for full details.
+     * @param {object} config - An object literal containing configuration.
+     * @returns {FlavorWheel}
      */
     static initialize(targetSelector, config) {
         config = new FlavorWheelConfig(config);
@@ -43,7 +70,49 @@ class FlavorWheel {
             .attr('baseProfile', 'full');
     }
 
+    /**
+     * Adds a data set to render.
+     *
+     * The data set should be passed in as an array of `{ label, value }`
+     * object literals.
+     *
+     * The `key` will be passed to D3 as the key for this data set. See
+     * https://bost.ocks.org/mike/constancy/ for more information. To summarize,
+     * this `key` uniquely identifies this data set, which also allows you to
+     * use `addData` to update a data set as well.
+     *
+     * Usage example:
+     *
+     * ```js
+     * const wheel = FlavorWheel.initialize("#wheel", config);
+     * const data = [
+     *   { label: 'salty', value: 1 },
+     *   { label: 'spicy', value: 2 },
+     *   { label: 'floral', value: 3 },
+     *   { label: 'sour/tart', value: 4 },
+     *   { label: 'sweet', value: 5 },
+     *   { label: 'linger/\nfinish', value: 1 }
+     * ];
+     *
+     * // Add data
+     * wheel.addData(data, 'profile1');
+     *
+     * // Update data
+     * // Note: this can be done with an entirely new data set.
+     * data[2].value = 5;
+     * wheel.addData(data, 'profile1');
+     *
+     * // Add entirely new data
+     * wheel.addData(data, 'profile2');
+     * ```
+     *
+     * @param {object[]} data - Array of data to add.
+     * @param {string} key - Uniquely indentifiable string for this data set.
+     * @param {string} [className] - HTML class name. Currently unused.
+     */
     addData(data, key, className = null) {
+        mustExist(key);
+
         this._pushData(data, key, className);
         this._renderData();
     }

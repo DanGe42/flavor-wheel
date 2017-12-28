@@ -6,15 +6,14 @@ class FlavorWheelConfig {
     /**
      * Creates a FlavorWheelConfig from an ad-hoc config object.
      *
-     * Config schema:
-     *
-     * ```js
-     * {
-     *   maxRating: Number,
-     *   maxGridRadius: Number,
-     *   labels: [String]
-     * }
-     * ```
+     * @param {Object} config - The FlavorWheel configuration object.
+     * @param {string[]} config.labels - List of labels. Must have at least
+     *      one label.
+     * @param {number} [config.maxRating] - Maximum rating. Defaults to 5.
+     * @param {number} [config.gridRadius] - Radius of circular grid.
+     *      Defaults to 250.
+     * @param {number} [config.viewWidth] - View width of SVG. Is used to
+     *      calculate the `viewWidth` attribute. Defaults to 800.
      */
     constructor(config) {
         mustExist(config, 'a config object is required');
@@ -34,6 +33,11 @@ class FlavorWheelConfig {
         return `${-viewWidth / 2} ${-viewWidth / 2} ${viewWidth} ${viewWidth}`;
     }
 
+    /**
+     * Returns a linear scale mapping a rating to its radius in the circular grid.
+     *
+     * @returns {d3.scaleLinear}
+     */
     get ratingRadialScale() {
         if (!this._ratingRadialScale) {
             this._ratingRadialScale = d3.scaleLinear()
@@ -43,6 +47,11 @@ class FlavorWheelConfig {
         return this._ratingRadialScale;
     }
 
+    /**
+     * Returns a linear scale mapping a label's index to its angle in the grid.
+     *
+     * @returns {d3.scaleLinear}
+     */
     get labelAngularScale() {
         if (!this._labelAngularScale) {
             this._labelAngularScale = d3.scaleLinear()
@@ -55,6 +64,12 @@ class FlavorWheelConfig {
         return this._labelAngularScale;
     }
 
+    /**
+     * Return the index of a label in the configured list of labels.
+     *
+     * @param {string} label - Label to look up.
+     * @returns {number} Index of the label.
+     */
     getLabelIndex(label) {
         return this._labelIndexes.get(label);
     }

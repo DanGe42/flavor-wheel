@@ -1,7 +1,10 @@
+import { mustExist } from '../../common/preconditions';
 import Coordinate from '../util/coordinate';
 
 class Datum {
     constructor(config, label, value) {
+        mustExist(config.getLabelIndex(label), `Label "${label}" is invalid`);
+
         this.label = label;
         this.value = value;
 
