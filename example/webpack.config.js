@@ -15,7 +15,7 @@ module.exports = {
   },
 
   // Webpack starts here in JS land
-  entry: './app/js/main.js',
+  entry: path.resolve(__dirname, './main.js'),
 
   module: {
     loaders: [

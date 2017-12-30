@@ -5,9 +5,7 @@
   "author": "Daniel Ge",
   "license": "MIT",
   "scripts": {
-    "build": "npm run webpack:build",
-    "webpack:build": "webpack --config webpack.config.js",
-    "webpack:dev": "webpack-dev-server"
+    "webpack:dev": "webpack-dev-server --content-base example/ --config example/webpack.config.js"
   },
   "devDependencies": {
     "babel-loader": "^7.1.2",

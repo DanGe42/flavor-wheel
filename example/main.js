@@ -9,10 +9,10 @@
 // bundle.css that gets served separately.
 //
 // Don't you love frontend development?
-require('../css/main.scss');
+require('./css/main.scss');
 
 import * as d3 from 'd3';
-import FlavorWheel from './flavor-wheel/flavor-wheel';
+import FlavorWheel from '../lib/flavor-wheel';
 
 const WHEEL_CONTROL_FORM_ID = 'wheel-control-form';
 const FORM_GROUP_CLASS = 'wheel-control__form-group';
