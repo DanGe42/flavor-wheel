@@ -17,36 +17,33 @@ Nothing really beats writing on the physical book itself, so if you like this, I
 recommend getting buying one of 33 Books. (By the way, I have no relationship of
 any sort with the publisher; just a happy customer.)
 
-## Setup
+## Development setup
 
 Prerequisites: Node >= 6
 
-`yarn install` (or `npm install`)
+1. `yarn install` (or `npm install`)
+2. `npm run webpack:dev`
+3. Point your browser to http://localhost:8080/
 
-To build the minified bundle, run `npm run build`.
-
-### Development server
-
-1. `npm run webpack:dev`
-2. Point your browser to http://localhost:8080/demo.html
-
-This setup runs via webpack-dev-server, so any changes you make to JavaScript
-or SCSS assets will trigger a browser refresh.
+This setup runs via webpack-dev-server, so any changes you make to the
+JavaScript (library or example code) or SCSS example assets will trigger a
+browser refresh.
 
 ## Usage
 
-A full usage example can be found in demo.html and app/js/main.js. See
-instructions above for running the development server.
+A full usage example can be found in example/index.html and example/main.js.
+See instructions above for running the development server.
 
-Documentation on how to create a FlavorWheel can be found in
-app/js/flavor-wheel/flavor-wheel.js. A typical invocation might look something
-like this:
+Full documentation on how to create a FlavorWheel can be found in
+lib/flavor-wheel.js. A typical invocation might look something like this:
 
 ```html
 <svg id="wheel"></svg>
 ```
 
 ```js
+import FlavorWheel from 'flavor-wheel';
+
 const wheel = FlavorWheel.initialize("#wheel", {
   maxRating: 5,
   gridRadius: 250,
