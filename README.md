@@ -80,7 +80,7 @@ A fully working example can be found in example/. See instructions in the
 next section for running the development server.
 
 Full documentation on how to create a FlavorWheel can be found in
-src/flavor-wheel.js. A typical invocation might look something like this:
+src/flavor-wheel.js.
 
 ## Development setup
 
