@@ -4,7 +4,8 @@
   "description": "Frontend library for rendering a flavor wheel",
   "author": "Daniel Ge <daniel@dge.io>",
   "license": "LGPL-3.0-or-later",
-  "main": "./lib/flavor-wheel.js",
+  "main": "./babel-out/flavor-wheel.js",
+  "module": "./lib/flavor-wheel.js",
   "directories": {
     "lib": "./lib"
   },
@@ -13,13 +14,16 @@
     "url": "https://github.com/DanGe42/flavor-wheel"
   },
   "scripts": {
+    "build": "babel ./lib --out-dir babel-out/",
+    "prepare": "npm run build",
     "webpack:dev": "webpack-dev-server --content-base example/ --config example/webpack.config.js"
   },
   "dependencies": {
-    "babel-core": "^6.26.0",
     "d3": "^4.11.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "css-loader": "^0.28.0",
