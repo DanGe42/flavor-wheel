@@ -4,6 +4,13 @@
   "description": "Frontend library for rendering a flavor wheel",
   "author": "Daniel Ge <daniel@dge.io>",
   "license": "LGPL-3.0",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "main": "./dist/flavor-wheel.js",
   "module": "./src/flavor-wheel.js",
   "directories": {
