@@ -16,7 +16,7 @@
   "scripts": {
     "build": "babel ./lib --out-dir babel-out/",
     "prepare": "npm run build",
-    "webpack:dev": "webpack-dev-server --content-base example/ --config example/webpack.config.js"
+    "start": "webpack-dev-server --content-base example/ --config example/webpack.config.js"
   },
   "dependencies": {
     "d3": "^4.11.0"
