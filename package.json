@@ -1,6 +1,6 @@
 {
   "name": "flavor-wheel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Frontend library for rendering a flavor wheel",
   "author": "Daniel Ge <daniel@dge.io>",
   "license": "LGPL-3.0",
