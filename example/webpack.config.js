@@ -23,7 +23,15 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         query: {
-          presets: ['es2015']
+          // Same as .babelrc
+          // TODO investigate if this works with .babelrc
+          presets: [
+            ["babel-preset-env", {
+              "targets": {
+                "browsers": ["last 2 versions", "safari >= 9"]
+              }
+            }]
+          ]
         }
       }
     ],
