@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Frontend library for rendering a flavor wheel",
   "author": "Daniel Ge <daniel@dge.io>",
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0",
   "main": "./babel-out/flavor-wheel.js",
   "module": "./lib/flavor-wheel.js",
   "directories": {
